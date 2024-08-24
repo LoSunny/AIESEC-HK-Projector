@@ -1,0 +1,81 @@
+name: Build Electron App
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    name: Build Executables
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+          - os: macos-latest
+            platform: darwin
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        shell: bash
+        run: |
+          npm run make -- -a x64
+          npm run make -- -a arm64
+          if [ "${{ matrix.platform }}" == "windows" ]; then
+              npm run make -- -a ia32
+          fi
+      - name: Rename files
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          for ARCH_DIR in "out/make/squirrel.windows"/*/; do
+            ARCH=$(basename "$ARCH_DIR")
+            for file in "$ARCH_DIR"*.exe; do
+            if [[ -f $file ]]; then  # Check if the file exists
+              mv "$file" "${file%.exe}.windows-$ARCH.exe"
+            fi
+            done
+          done
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ matrix.platform }}
+          path: |
+            out/make/zip/**/*.zip
+            out/make/squirrel.windows/**/*.exe
+            out/make/*.dmg
+          if-no-files-found: error
+          retention-days: 1
+  merge:
+    name: New Release
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/files
+          pattern: artifacts-*
+          merge-multiple: true
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: /tmp/files/**
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: v${{ github.run_number }}
+          name: Release ${{ github.run_number }}
+          body: This is an automated release
+          draft: true
+          prerelease: false

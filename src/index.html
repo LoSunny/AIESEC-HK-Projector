@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>AIESEC HK Controller</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body>
+<div style="display: flex; flex-direction: column; width: 100%; height: 100%">
+    <div style="margin: 1rem;">
+        <label>
+            <span>URL to open:</span>
+            <input type="text" id="url"
+                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="URL"/>
+            <input type="text" id="name"
+                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Name"/>
+            <button id="open" class="text-white bg-blue-700 hover:bg-blue-800 rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
+                Open
+            </button>
+            <button id="freeze" class="text-white bg-pink-700 hover:bg-pink-800 rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
+                Freeze
+            </button>
+            <button id="previous" class="text-white bg-cyan-700 hover:bg-cyan-800 rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
+                Previous Slide Key: (Unset)
+            </button>
+            <button id="next" class="text-white bg-cyan-700 hover:bg-cyan-800 rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
+                Next Slide Key: (Unset)
+            </button>
+        </label>
+    </div>
+    <div style="flex-grow: 1" class="row">
+        <div style="margin: 1rem;" id="screens" class="column">
+            <div class="column">
+                <button id="black" class="text-white bg-green-700 hover:bg-green-900 rounded-lg text-sm px-5 py-1 me-2 mb-2 cursor-pointer screen">
+                    Black Screen
+                </button>
+                <div>
+                    <button class="text-white bg-purple-700 hover:bg-purple-900 rounded-lg text-sm px-3 py-1 me-2 mb-2 cursor-pointer present" data-id="black">
+                        Present
+                    </button>
+                    <button class="text-white bg-red-700 hover:bg-red-900 rounded-lg text-sm px-3 py-1 me-2 mb-2 cursor-not-allowed delete" disabled>
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="win" style="flex-grow: 1; background: black"></div>
+    </div>
+</div>
+</body>
+</html>
