@@ -1,6 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     new MutationObserver((mutationsList, observer) => {
-        const gotitBtn = [...document.querySelectorAll('button > span')].find(el => el.innerText === 'Got it');
+        const gotitBtn = [...document.querySelectorAll<HTMLElement>("button > span")].find(el => el.innerText === "Got it");
         if (gotitBtn != null) {
             observer.disconnect();
             gotitBtn.parentElement.click();

@@ -12,5 +12,10 @@
     "plugin:import/electron",
     "plugin:import/typescript"
   ],
+  "rules": {
+    "quotes": "warn",
+    "semi": "warn",
+    "eol-last": "warn"
+  },
   "parser": "@typescript-eslint/parser"
 }

@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    name: Build Executables
+    name: Build ${{ matrix.platform }} Executables
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -29,6 +29,8 @@ jobs:
           if [ "${{ matrix.platform }}" == "windows" ]; then
               npm run make -- -a ia32
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Rename files
         if: runner.os == 'Windows'
         shell: bash
@@ -37,7 +39,7 @@ jobs:
             ARCH=$(basename "$ARCH_DIR")
             for file in "$ARCH_DIR"*.exe; do
             if [[ -f $file ]]; then  # Check if the file exists
-              mv "$file" "${file%.exe}.windows-$ARCH.exe"
+              mv "$file" "${file%.exe}.installer.windows-$ARCH.exe"
             fi
             done
           done

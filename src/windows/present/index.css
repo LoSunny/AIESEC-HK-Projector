@@ -1,20 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 html, body {
     width: 100%;
     height: 100%;
     margin: 0;
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-}
-
 #active, #present {
     display: flex;
     flex-direction: column;
-
 }
 
-.video {
+.center {
     position: absolute;
     top: 50%;
     left: 50%;
