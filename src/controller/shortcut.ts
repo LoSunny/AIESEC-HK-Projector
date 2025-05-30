@@ -25,7 +25,7 @@ export function setupShortcuts(mainWindow: () => BrowserWindow) {
         if (nextKey !== "") {
             try {
                 globalShortcut.unregister(nextKey);
-            } catch (e) {
+            } catch (_e) {
             }
         }
         if (key === "") return;
@@ -58,7 +58,7 @@ export function setupShortcuts(mainWindow: () => BrowserWindow) {
                         });
                     });
             });
-        } catch (e) {
+        } catch (_e) {
             mainWindow().webContents.send("swal", {title: "Unable to parse shortcut, please choose a different keybind", ...errorSwal});
         }
     });

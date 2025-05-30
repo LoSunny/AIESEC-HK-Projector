@@ -2,7 +2,7 @@ import type {Configuration} from "webpack";
 
 import {rules} from "./webpack.rules";
 import {plugins} from "./webpack.plugins";
-import CopyWebpackPlugin from "copy-webpack-plugin";
+import TerserPlugin from "terser-webpack-plugin";
 
 export const mainConfig: Configuration = {
     /**
@@ -16,12 +16,13 @@ export const mainConfig: Configuration = {
     },
     plugins: [
         ...plugins,
-        new CopyWebpackPlugin({
-            patterns: [{from: "src/windows/observer/index.html", to: "observer.html"}]
-        }),
     ],
     resolve: {
         extensions: [".js", ".ts", ".jsx", ".tsx", ".css", ".json"],
     },
-    externals: ["nock", "mock-aws-s3", "aws-sdk", "bufferutil", "utf-8-validate"]
+    externals: ["nock", "mock-aws-s3", "aws-sdk", "bufferutil", "utf-8-validate"],
+    optimization: {
+        minimize: true,
+        minimizer: [new TerserPlugin()],
+    },
 };

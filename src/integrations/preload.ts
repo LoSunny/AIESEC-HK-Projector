@@ -110,8 +110,9 @@ const googleSlideFunction = () => {
     // window.viewerElectronAPI.googleSlideReady();
     console.log("Script injected");
     const open = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function (method: string, url: string | URL, async?: boolean, username?: string, password?: string) {
+    XMLHttpRequest.prototype.open = function (method: string, url: string | URL, _async?: boolean, _username?: string, _password?: string, ...args: any[]) {
         if (method === "GET" && url.toString().match(/https:\/\/docs\.google\.com\/presentation\/d\/.+\/bind\?id=.+/)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const oldReady: (this: XMLHttpRequest, ev: Event) => any | null = this.onreadystatechange;
             this.onreadystatechange = function () {
                 const res = this.response.split("\n");
@@ -119,10 +120,10 @@ const googleSlideFunction = () => {
                 if (res[res.length - 1].includes("\"c\"")) {
                     window.viewerElectronAPI.googleSlideChanged();
                 }
-                return oldReady.apply(this, arguments);
+                return oldReady.apply(this, args);
             };
         }
-        return open.apply(this, arguments);
+        return open.apply(this, args);
     };
 };
 

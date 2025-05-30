@@ -1,12 +1,11 @@
 import {fullscreen} from "./fullscreen";
 
 import "./index.css";
-import {setupObserver} from "../observer/present-renderer";
+import {deleteJitsi, newJitsi, renameJitsi} from "./jitsi";
 
 const sources: Record<string, MediaStream> = {};
 
 document.addEventListener("DOMContentLoaded", () => {
-    setupObserver(() => sources);
     new ResizeObserver(() => {
         const rect = document.body.getBoundingClientRect();
         const {x, y, width, height} = rect;
@@ -44,7 +43,7 @@ function rendererResize() {
     }
 }
 
-window.presentElectronAPI.onNewSource((uuid, sourceId) => {
+window.presentElectronAPI.onNewSource((uuid, name, sourceId) => {
     console.log("new-source", uuid, sourceId);
     navigator.mediaDevices.getUserMedia({
         // Audio is currently not supported
@@ -57,6 +56,7 @@ window.presentElectronAPI.onNewSource((uuid, sourceId) => {
         }
     } as MediaStreamConstraints).then(stream => {
         sources[uuid] = stream;
+        newJitsi(uuid, name, stream);
     }).catch(err => {
         console.error(err);
     });
@@ -92,6 +92,7 @@ window.presentElectronAPI.onDeleteSource((uuid) => {
     if (!stream) return;
     stream.getVideoTracks().forEach(track => track.stop());
     delete sources[uuid];
+    deleteJitsi(uuid);
 });
 
 window.presentElectronAPI.onFreeze(() => {
@@ -115,4 +116,8 @@ window.presentElectronAPI.onFreeze(() => {
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     document.body.appendChild(canvas);
     video.style.display = "none";
+});
+
+window.presentElectronAPI.onRenameSource((uuid, newName) => {
+    renameJitsi(uuid, newName);
 });

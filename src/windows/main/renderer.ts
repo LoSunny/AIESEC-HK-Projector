@@ -230,7 +230,7 @@ document.getElementById("observer").addEventListener("click", () => {
                 imageUrl: dataurl,
             }).then(() => {
                 if (active) changeActive(active);
-            })
-        })
+            });
+        });
     });
 });

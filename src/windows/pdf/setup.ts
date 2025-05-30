@@ -2,7 +2,6 @@ import {app, BrowserWindow, ipcMain, WebContentsView} from "electron";
 import {MenuFunctions} from "../../controller/menu";
 import {addView, deactiveAllViews} from "../../controller/views";
 import {resizeView} from "../../controller/resizer";
-import {newSource} from "../observer/server";
 
 export function setupPDFScreen(mainWindow: () => BrowserWindow, presentWindow: () => BrowserWindow,
                                PDF_WINDOW_WEBPACK_ENTRY: string, PDF_WINDOW_PRELOAD_WEBPACK_ENTRY: string,
@@ -32,7 +31,6 @@ export function setupPDFScreen(mainWindow: () => BrowserWindow, presentWindow: (
         view.webContents.openDevTools({mode: "detach"});
         addView({id: uuid, name,type: "general", webContents: [view], active: true, present: false});
         resizeView();
-        newSource(uuid, name);
         if (!app.isPackaged) newViewMenu(view, uuid, `PDF: ${name}`);
         mainWindow().webContents.send("new-screen-accepted", uuid, name);
     });

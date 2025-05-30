@@ -15,15 +15,11 @@ import PortableMaker from "./src/PortableMaker";
 import {execSync} from "node:child_process";
 import * as path from "node:path";
 import * as fs from "node:fs";
-import {Readable} from "node:stream";
-import {finished} from "node:stream/promises";
-import {ReadableStream} from "node:stream/web";
-import * as zlib from "node:zlib";
-import * as tar from "tar";
 
 const config: ForgeConfig = {
     packagerConfig: {
         name: "AIESEC HK Projector",
+        appBundleId: "tk.sunnylo.aiesec.projector",
         asar: true,
         icon: "./src/assets/Icon",
         appCategoryType: "public.app-category.developer-tools",
@@ -38,7 +34,7 @@ const config: ForgeConfig = {
         new WebpackPlugin({
             mainConfig,
             // default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:
-            // devContentSecurityPolicy: "default-src 'self' data: 'unsafe-inline'; script-src 'self' data: 'unsafe-inline' 'unsafe-eval'; script-src-elem 'self' https://cdn.tailwindcss.com 'sha256-F2Bg2XDzKIHKH8qssVhrt6ggqvaZhUppPBJw7p8cyXM='; style-src 'self' data: 'unsafe-inline' https://rsms.me/inter/inter.css; font-src https://rsms.me/inter/font-files/",
+            devContentSecurityPolicy: "default-src * 'self' data: 'unsafe-inline' 'unsafe-hashes' 'unsafe-eval'",
             renderer: {
                 config: rendererConfig,
                 entryPoints: [
@@ -72,6 +68,7 @@ const config: ForgeConfig = {
                         },
                     }, {
                         name: "viewer_window",
+                        // js: "./src/integrations/renderer.ts",
                         preload: {
                             js: "./src/integrations/preload.ts",
                         }
@@ -79,13 +76,6 @@ const config: ForgeConfig = {
                         name: "canva_window",
                         preload: {
                             js: "./src/integrations/canva.ts",
-                        }
-                    }, {
-                        name: "observer_window",
-                        html: "./src/windows/observer/index.html",
-                        js: "./src/windows/observer/renderer.ts",
-                        preload: {
-                            js: "./src/windows/observer/preload.ts",
                         }
                     }
                 ],
@@ -105,28 +95,29 @@ const config: ForgeConfig = {
     ],
     hooks: {
         preStart: async config => {
-            console.log("Starting preStart hook")
-            await pre(config)
-            console.log("Finished preStart hook")
+            console.log("Starting preStart hook");
+            await pre(config);
+            console.log("Finished preStart hook");
         },
         postStart: async config => {
-            console.log("Starting postStart hook")
-            await post("start", config)
-            console.log("Finished postStart hook")
+            console.log("Starting postStart hook");
+            await post("start", config);
+            console.log("Finished postStart hook");
         },
         prePackage: async config => {
-            console.log("Starting prePackage hook")
-            await pre(config)
-            console.log("Finished prePackage hook")
+            console.log("Starting prePackage hook");
+            await pre(config);
+            console.log("Finished prePackage hook");
         },
         postPackage: async config => {
-            console.log("Starting postPackage hook")
-            await post("package", config)
-            console.log("Finished postPackage hook")
+            console.log("Starting postPackage hook");
+            await post("package", config);
+            console.log("Finished postPackage hook");
         },
     }
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function pre(config: ResolvedForgeConfig) {
     const sharescreen = path.resolve(__dirname, "src", "windows", "sharescreen");
     const bin = path.resolve(__dirname, "bin");
@@ -143,6 +134,7 @@ async function pre(config: ResolvedForgeConfig) {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function post(name: "start" | "package", config: ResolvedForgeConfig) {
     const sharescreen = path.resolve(__dirname, "src", "windows", "sharescreen");
     if (process.platform === "darwin") {
@@ -154,63 +146,6 @@ async function post(name: "start" | "package", config: ResolvedForgeConfig) {
         const dst = path.resolve(__dirname, "bin", "shortcut.exe");
         if (!fs.existsSync(dst)) fs.copyFileSync(src, dst);
     }
-
-    if (name === "start") {
-        const paths = process.env.PATH.split(path.delimiter);
-
-        if (paths.map(p => fs.existsSync(p) ? fs.readdirSync(p).filter(file => file.includes("cloudflared")) : []).flat().length === 0 &&
-            fs.readdirSync(path.resolve(__dirname, "bin")).filter(file => file.includes("cloudflared")).length === 0)
-            await downloadCloudflared();
-    } else if (name === "package") {
-        if (fs.readdirSync(path.resolve(__dirname, "bin")).filter(file => file.includes("cloudflared")).length === 0 || process.platform === "win32")
-            await downloadCloudflared();
-    }
-}
-
-async function downloadCloudflared() {
-    console.log("Downloading cloudflared...");
-    let headers: Record<string, string> = {"Content-Type": "application/json"};
-    if (process.env.GITHUB_TOKEN) {
-        headers = {
-            ...headers,
-            Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-        };
-    }
-    const res = await fetch("https://api.github.com/repos/cloudflare/cloudflared/releases/latest", {headers}).then(res => res.json())
-    const dest = path.resolve(__dirname, "bin");
-    if (process.platform === "darwin") {
-        const assets = res.assets.filter((asset: any) => asset.name.includes("darwin"));
-        if (assets.length === 0) return;
-        await Promise.all(assets.map(async (asset: any) => {
-            const response = await fetch(asset.browser_download_url);
-            await finished(Readable.fromWeb(response.body as ReadableStream<any>).pipe(zlib.createUnzip()).pipe(tar.extract({
-                cwd: dest, onReadEntry: entry => {
-                    entry.path = asset.name.split(".")[0];
-                    return entry;
-                }
-            })))
-        }))
-        execSync(`lipo -create ${assets.map((asset: any) => asset.name.split(".")[0]).join(" ")} -output cloudflared`, {cwd: dest});
-        assets.forEach((asset: any) => fs.rmSync(path.resolve(dest, asset.name.split(".")[0])));
-    } else if (process.platform === "win32") {
-        for (let bin of fs.readdirSync(dest).filter(f => f.includes("cloudflared"))) {
-            fs.rmSync(path.resolve(dest, bin));
-        }
-        const assets = res.assets.filter((asset: any) => asset.name.includes("windows") && asset.name.includes(".exe"));
-        if (assets.length === 0) return;
-        await Promise.all(assets.map(async (asset: any) => {
-            const response = await fetch(asset.browser_download_url);
-            await finished(Readable.fromWeb(response.body as ReadableStream<any>).pipe(fs.createWriteStream(path.resolve(dest, asset.name))));
-        }));
-    } else if (process.platform === "linux") {
-        const assets = res.assets.filter((asset: any) => asset.name.includes("linux") && !asset.name.includes("."));
-        if (assets.length === 0) return;
-        await Promise.all(assets.map(async (asset: any) => {
-            const response = await fetch(asset.browser_download_url);
-            await finished(Readable.fromWeb(response.body as ReadableStream<any>).pipe(fs.createWriteStream(path.resolve(dest, asset.name))));
-        }));
-    }
-    console.log("Finished downloading cloudflared");
 }
 
 export default config;

@@ -18,7 +18,6 @@ import {ChildProcess, spawn} from "node:child_process";
 import * as process from "node:process";
 import * as path from "node:path";
 import {openWindows} from "get-windows";
-import {newSource} from "../observer/server";
 import {getBinPath} from "../electronUtils";
 
 export function setupShareScreen(mainWindow: () => BrowserWindow, presentWindow: () => BrowserWindow,
@@ -169,7 +168,6 @@ export function setupShareScreen(mainWindow: () => BrowserWindow, presentWindow:
         });
 
         resizeView();
-        newSource(uuid, name);
         if (!app.isPackaged) newViewMenu(view, uuid, `Screen Share ${uuid.split("-")[0]}`);
         mainWindow().webContents.send("new-screen-accepted", uuid, name);
         if (process.platform === "darwin") systemPreferences.isTrustedAccessibilityClient(true);
