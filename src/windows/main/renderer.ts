@@ -218,19 +218,17 @@ document.getElementById("pdf").addEventListener("click", () => {
 });
 
 document.getElementById("observer").addEventListener("click", () => {
-    window.api.cloudflareTunnelURL().then(url => {
-        if (url == null) return Swal.fire("Error", "Failed to get the Cloudflare Tunnel URL, please retry in a moment.", "error");
-        QRCode.toDataURL(url, (err, dataurl) => {
-            const active = document.getElementsByClassName("active")[0];
-            changeActive(document.getElementsByClassName("screen")[0]);
+    const url = "https://jitsi.riot.im/aiesechk";
+    QRCode.toDataURL(url, (err, dataurl) => {
+        const active = document.getElementsByClassName("active")[0];
+        changeActive(document.getElementsByClassName("screen")[0]);
 
-            Swal.fire({
-                title: "Share this URL with the observer",
-                text: url,
-                imageUrl: dataurl,
-            }).then(() => {
-                if (active) changeActive(active);
-            });
+        Swal.fire({
+            title: "Share this URL with the observer",
+            text: url,
+            imageUrl: dataurl,
+        }).then(() => {
+            if (active) changeActive(active);
         });
     });
 });

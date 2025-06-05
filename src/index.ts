@@ -27,7 +27,7 @@ declare const CANVA_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 if (require("electron-squirrel-startup")) {
     app.quit();
 }
-
+console.log("Starting AIESEC HK Projector in ", app.getPath("userData"));
 app.setName("AIESEC HK Projector");
 
 let mainWindow: BrowserWindow;
@@ -125,6 +125,13 @@ app.on("ready", () => {
                 action: "deny"
             };
         });
+        // if (viewType === "google") {
+        //     view.webContents.session.extensions.loadExtension('/Users/sunnylo/Library/Application Support/Google/Chrome/Profile 1/Extensions/ghbmnnjooekpmoecnnnilnnbdlolhkhi/1.92.1_0').then(id => {
+        //         console.log("Extension loaded:", id);
+        //     }).catch(err => {
+        //         console.error("Failed to load extension:", err);
+        //     })
+        // }
         deactiveAllViews();
         presentWindow.webContents.send("new-source", uuid, name, view.webContents.getMediaSourceId(presentWindow.webContents));
         mainWindow.contentView.addChildView(view);

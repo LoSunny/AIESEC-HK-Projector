@@ -105,9 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// if (window.location.href.startsWith("https://docs.google.com/")) {
 const googleSlideFunction = () => {
-    // window.viewerElectronAPI.googleSlideReady();
     console.log("Script injected");
     const open = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function (method: string, url: string | URL, _async?: boolean, _username?: string, _password?: string, ...args: any[]) {
