@@ -20,7 +20,6 @@ export const electronAPI = {
     screenStopped: (callback: (uuid: string) => void) => ipcRenderer.on("screen-stopped", (event, uuid: string) => callback(uuid)),
     pdf: (name: string, data: string) => ipcRenderer.send("new-pdf", name, data),
     volumeMute: (uuid: string) => ipcRenderer.send("volume-mute", uuid),
-    // cloudflareTunnelURL: () => ipcRenderer.invoke("cloudflare-tunnel-url"),
 };
 
 contextBridge.exposeInMainWorld("api", electronAPI);
