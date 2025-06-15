@@ -1,5 +1,5 @@
 import {ElectronBlocker} from "@ghostery/adblocker-electron";
-import {app, BrowserWindow, dialog, ipcMain, powerSaveBlocker, WebContentsView} from "electron";
+import {app, BrowserWindow, components, dialog, ipcMain, powerSaveBlocker, shell, WebContentsView} from "electron";
 import fetch from "cross-fetch";
 import {setupShortcuts} from "./controller/shortcut";
 import {resizeView, setupResizer} from "./controller/resizer";
@@ -22,6 +22,8 @@ declare const PDF_WINDOW_WEBPACK_ENTRY: string;
 declare const PDF_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const VIEWER_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const CANVA_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const SETTINGS_WINDOW_WEBPACK_ENTRY: string;
+declare const SETTINGS_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 if (require("electron-squirrel-startup")) {
@@ -32,12 +34,13 @@ app.setName("AIESEC HK Projector");
 
 let mainWindow: BrowserWindow;
 let presentWindow: BrowserWindow;
+let settingsWindow: BrowserWindow | null = null;
 const {
     newViewMenu,
     deleteViewMenu,
     newInnerViewMenu,
     deleteInnerViewMenu
-} = setupMenu(() => mainWindow, () => presentWindow);
+} = setupMenu(() => mainWindow, () => presentWindow, () => settingsWindow);
 setupResizer();
 
 const createWindow = (): void => {
@@ -64,13 +67,6 @@ const createWindow = (): void => {
     presentWindow.loadURL(PRESENT_WINDOW_WEBPACK_ENTRY);
     // presentWindow.webContents.openDevTools({mode: 'detach'});
 
-    // presentWindow.webContents.session.webRequest.onBeforeSendHeaders({urls: ["*://meet.element.io/*"]}, (details, callback) => {
-    //     const headers = details.requestHeaders;
-    //     headers["origin"] = "https://jitsi.riot.im"
-    //     headers["referer"] = "https://jitsi.riot.im/"
-    //     return callback({cancel: false, requestHeaders: headers});
-    // });
-
     let closingWindow = false;
     let closeTimer = Date.now();
     [mainWindow, presentWindow].forEach(win => {
@@ -94,12 +90,28 @@ const createWindow = (): void => {
     });
     setupShareScreen(() => mainWindow, () => presentWindow, SHARE_SCREEN_WINDOW_WEBPACK_ENTRY, SHARE_SCREEN_WINDOW_PRELOAD_WEBPACK_ENTRY, newViewMenu);
     setupPDFScreen(() => mainWindow, () => presentWindow, PDF_WINDOW_WEBPACK_ENTRY, PDF_WINDOW_PRELOAD_WEBPACK_ENTRY, newViewMenu);
+
+    if (app.isPackaged) fetch("https://api.github.com/repos/LoSunny/AIESEC-HK-Projector/releases/latest", {
+        headers: {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
+    }).then(res => res.json()).then(res => {
+        if (res.tag_name !== `v${app.getVersion()}`) {
+            mainWindow.webContents.send("swal", {
+                title: "Update Available",
+                text: `A new version of AIESEC HK Projector is available! Version ${res.tag_name} is now available. Please update to the latest version.`,
+                icon: "info",
+                showCancelButton: true,
+                confirmButtonText: "Update Now",
+                cancelButtonText: "Later",
+            })
+        }
+    })
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", () => {
+app.on("ready", async () => {
+    await components.whenReady();
     powerSaveBlocker.start("prevent-display-sleep");
     // nativeTheme.themeSource = "light";
 
@@ -125,20 +137,14 @@ app.on("ready", () => {
                 action: "deny"
             };
         });
-        // if (viewType === "google") {
-        //     view.webContents.session.extensions.loadExtension('/Users/sunnylo/Library/Application Support/Google/Chrome/Profile 1/Extensions/ghbmnnjooekpmoecnnnilnnbdlolhkhi/1.92.1_0').then(id => {
-        //         console.log("Extension loaded:", id);
-        //     }).catch(err => {
-        //         console.error("Failed to load extension:", err);
-        //     })
-        // }
         deactiveAllViews();
         presentWindow.webContents.send("new-source", uuid, name, view.webContents.getMediaSourceId(presentWindow.webContents));
         mainWindow.contentView.addChildView(view);
         // view.webContents.openDevTools({mode: 'detach'});
         addView({id: uuid, name, type: viewType, webContents: [view], active: true, present: false});
         resizeView();
-        if (!app.isPackaged) newViewMenu(view, uuid, name);
+        view.webContents.setUserAgent(view.webContents.session.getUserAgent().replace(/AIESECHKProjector\/.+? /, "").replace(/Electron\/.+? /, ""));
+        newViewMenu(view, uuid, name);
 
         ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
             blocker.enableBlockingInSession(view.webContents.session);
@@ -185,7 +191,7 @@ app.on("ready", () => {
             mainWindow.contentView.removeChildView(webContents);
         });
         deleteView(source);
-        if (!app.isPackaged) deleteViewMenu(source);
+        deleteViewMenu(source);
     });
     ipcMain.on("rename-window", (event, uuid: string, newName: string) => {
         getView(uuid).name = newName;
@@ -204,6 +210,31 @@ app.on("ready", () => {
         view.webContents.forEach(webContents => {
             webContents.webContents.setAudioMuted(!webContents.webContents.isAudioMuted());
         });
+    });
+    ipcMain.on("open-settings", (event) => {
+        if (settingsWindow == null || settingsWindow.isDestroyed()) {
+            settingsWindow = new BrowserWindow({
+                height: 600,
+                width: 800,
+                webPreferences: {
+                    preload: SETTINGS_WINDOW_PRELOAD_WEBPACK_ENTRY,
+                    partition: "settings",
+                },
+            });
+            settingsWindow.loadURL(SETTINGS_WINDOW_WEBPACK_ENTRY);
+            // settingsWindow.webContents.openDevTools({mode: "detach"});
+            settingsWindow.on("closed", () => {
+                settingsWindow = null;
+            });
+        } else if (settingsWindow != null) {
+            if (settingsWindow.isMinimized()) {
+                settingsWindow.restore();
+            }
+            settingsWindow.focus();
+        }
+    });
+    ipcMain.on("open-url", (event, url: string) => {
+        shell.openExternal(url);
     });
     createWindow();
 });

@@ -1,10 +1,10 @@
-import {app, BrowserWindow, WebContentsView, WindowOpenHandlerResponse} from "electron";
+import {BrowserWindow, WebContentsView, WindowOpenHandlerResponse} from "electron";
 import {getView} from "../controller/views";
 import {resizeView} from "../controller/resizer";
 import {MenuFunctions} from "../controller/menu";
 
 export function canvaWindowOpenHandler(CANVA_WINDOW_PRELOAD_WEBPACK_ENTRY: string, mainWindow: BrowserWindow, view: WebContentsView, url: string, uuid: string, newInnerViewMenu: MenuFunctions["newInnerViewMenu"], deleteInnerViewMenu: MenuFunctions["deleteInnerViewMenu"]): WindowOpenHandlerResponse {
-    const response: WindowOpenHandlerResponse = {
+    return {
         action: "allow",
         overrideBrowserWindowOptions: {
             webPreferences: {
@@ -25,14 +25,13 @@ export function canvaWindowOpenHandler(CANVA_WINDOW_PRELOAD_WEBPACK_ENTRY: strin
                 mainWindow.contentView.removeChildView(innerView);
                 getView(uuid).webContents.splice(0, 1);
                 resizeView();
-                if (!app.isPackaged) deleteInnerViewMenu(uuid);
+                deleteInnerViewMenu(uuid);
             });
             getView(uuid).webContents.splice(0, 0, innerView);
             mainWindow.contentView.addChildView(innerView);
             resizeView();
-            if (!app.isPackaged) newInnerViewMenu(innerView, uuid);
+            newInnerViewMenu(innerView, uuid);
             return innerView.webContents;
         }
     };
-    return response;
 }

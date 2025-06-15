@@ -62,6 +62,10 @@ export function setupShortcuts(mainWindow: () => BrowserWindow) {
             mainWindow().webContents.send("swal", {title: "Unable to parse shortcut, please choose a different keybind", ...errorSwal});
         }
     });
+    ipcMain.handle("get-next-shortcut", () => {
+        console.log("Getting next shortcut", nextKey);
+        return nextKey;
+    });
     let prevKey = "";
     ipcMain.on("prev-shortcut", (event, key: string) => {
         console.log("prev-shortcut", key);
@@ -93,4 +97,5 @@ export function setupShortcuts(mainWindow: () => BrowserWindow) {
                 });
         });
     });
+    ipcMain.handle("get-prev-shortcut", () => prevKey);
 }

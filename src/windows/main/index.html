@@ -9,7 +9,6 @@
     <div class="flex flex-col h-full w-full">
         <div class="m-4">
             <label>
-                <span>URL to open:</span>
                 <input class="border text-sm rounded-lg p-2.5 bg-gray-200 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                        id="url"
                        placeholder="URL"
@@ -33,23 +32,24 @@
                 <button class="text-white bg-pink-700 hover:bg-pink-800 rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
                         id="freeze">Freeze
                 </button>
-                <button class="text-white bg-cyan-700 hover:bg-cyan-800 rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
-                        id="previous">
-                    Previous Slide Key: (Unset)
+                <button class="text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+                        id="settings">
+                    Open Settings
                 </button>
-                <button class="text-white bg-cyan-700 hover:bg-cyan-800 rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
-                        id="next">
-                    Next Slide Key: (Unset)
-                </button>
-<!--                <button class="text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg text-sm px-5 py-2.5 me-2 mb-2"-->
-<!--                        id="observer">-->
-<!--                    Show Observer-->
-<!--                </button>-->
+                <!--                <button class="text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg text-sm px-5 py-2.5 me-2 mb-2"-->
+                <!--                        id="observer">-->
+                <!--                    Show Observer-->
+                <!--                </button>-->
             </label>
         </div>
         <div class="flex flex-row grow overflow-auto">
             <div class="flex flex-col m-4" id="screens">
                 <div class="flex flex-col">
+                    <div class="flex flex-row justify-between items-center mb-2">
+                        <img class="cursor-pointer" src="../icons/gdrive.svg" alt="Google Drive" width="24px" id="gdrive"/>
+                        <img class="cursor-pointer" src="../icons/yt.svg" alt="YouTube" width="24px" id="yt"/>
+                        <img class="cursor-pointer" src="../icons/spotify.svg" alt="Spotify" width="24px" id="spotify"/>
+                    </div>
                     <button class="text-white bg-green-700 hover:bg-green-900 rounded-lg text-sm px-5 py-1 mb-2 cursor-pointer screen"
                             id="black">
                         Black Screen

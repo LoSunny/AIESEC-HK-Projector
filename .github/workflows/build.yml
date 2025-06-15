@@ -15,6 +15,9 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+      - run: python -m pip install --upgrade castlabs-evs
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -31,6 +34,8 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVS_ACCOUNT_NAME: ${{ secrets.EVS_ACCOUNT_NAME }}
+          EVS_PASSWD: ${{ secrets.EVS_PASSWD }}
       - name: Rename files
         if: runner.os == 'Windows'
         shell: bash

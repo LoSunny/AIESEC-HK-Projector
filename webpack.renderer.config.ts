@@ -18,11 +18,14 @@ export const rendererConfig: Configuration = {
     plugins: [
         ...plugins,
         new CopyWebpackPlugin({
-            patterns: [{from: "node_modules/pdfjs-dist/build/pdf.worker.mjs", to: "pdf.worker.mjs"}]
+            patterns: [
+                {from: "node_modules/pdfjs-dist/build/pdf.worker.mjs", to: "pdf.worker.mjs"},
+                {from: "src/assets/icons", to: "icons"}
+            ]
         })
     ],
     resolve: {
-        extensions: [".js", ".ts", ".jsx", ".tsx", ".css"],
+        extensions: [".js", ".ts", ".jsx", ".tsx", ".css", ".svg"],
     },
     optimization: {
         minimize: true,

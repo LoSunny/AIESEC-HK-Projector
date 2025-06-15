@@ -2,6 +2,30 @@ import "./index.css";
 import Swal, {SweetAlertOptions} from "sweetalert2";
 import QRCode from "qrcode";
 
+[document.getElementById("url"), document.getElementById("name")].forEach(e => e.addEventListener("keypress", event=> {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    document.getElementById("open").click();
+}));
+
+document.getElementById("gdrive").addEventListener("click", () => {
+    (document.getElementById("url") as HTMLInputElement).value = "https://drive.google.com/";
+    (document.getElementById("name") as HTMLInputElement).value = "Google Drive";
+    document.getElementById("open").click();
+});
+
+document.getElementById("yt").addEventListener("click", () => {
+    (document.getElementById("url") as HTMLInputElement).value = "https://www.youtube.com/";
+    (document.getElementById("name") as HTMLInputElement).value = "YouTube";
+    document.getElementById("open").click();
+});
+
+document.getElementById("spotify").addEventListener("click", () => {
+    (document.getElementById("url") as HTMLInputElement).value = "https://open.spotify.com/";
+    (document.getElementById("name") as HTMLInputElement).value = "Spotify";
+    document.getElementById("open").click();
+});
+
 document.getElementById("open").addEventListener("click", () => {
     const urlEle = document.getElementById("url") as HTMLInputElement;
     const url = urlEle.value;
@@ -58,15 +82,11 @@ function newScreen(uuid: string, name: string) {
     deleteButton.onclick = () => deleteWindow(deleteButton);
     presentDiv.appendChild(deleteButton);
     const volumeSvg = document.createElement("div");
-    volumeSvg.innerHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6 cursor-pointer\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z\"/></svg>";
-    volumeSvg.onclick = e => {
-        const volumeSvg = e.target as HTMLElement;
-        if (volumeSvg.classList.contains("mute")) {
-            volumeSvg.innerHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6 cursor-pointer\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z\"/></svg>";
-        } else {
-            volumeSvg.innerHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6 cursor-pointer\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z\" /></svg>";
-        }
-        volumeSvg.classList.toggle("mute");
+    volumeSvg.className = 'volumecontrol';
+    volumeSvg.insertAdjacentHTML('afterbegin', "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6 cursor-pointer unmuted\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z\"/></svg><svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6 cursor-pointer muted\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z\" /></svg>");
+    volumeSvg.onclick = (e) => {
+        const target = e.target as HTMLElement;
+        target.parentElement.parentElement.getElementsByClassName('volumecontrol')[0].classList.toggle("mute");
         window.api.volumeMute(uuid);
     };
     presentDiv.appendChild(volumeSvg);
@@ -107,84 +127,14 @@ function deleteWindow(element: EventTarget) {
     window.api.deleteWindow(source);
 }
 
-let resetKey = true;
-let keys = new Set<string>();
-let pressedKeys = new Set<string>();
-
-function keyDownEvent(event: KeyboardEvent, element: HTMLButtonElement) {
-    pressedKeys.add(event.key);
-    if (resetKey) {
-        keys.clear();
-        pressedKeys.forEach(key => keys.add(key));
-    }
-    resetKey = false;
-    if (!keys.has(event.key)) keys.add(event.key);
-    element.textContent = "Next Slide Key: " + Array.from(keys).join(", ");
-}
-
-function keyUpEvent(event: KeyboardEvent) {
-    pressedKeys.delete(event.key);
-    resetKey = true;
-}
-
-const next = document.getElementById("next") as HTMLButtonElement;
-const keyDownEventNext = (event: KeyboardEvent) => keyDownEvent(event, next);
-next.addEventListener("click", () => {
-    if (document.getElementsByClassName("custom-glow").length > 0 && !next.classList.contains("custom-glow")) return;
-    if (next.textContent.includes("Unset")) {
-        keys = new Set<string>();
-        pressedKeys = new Set<string>();
-        prev.disabled = true;
-        next.classList.add("custom-glow");
-        next.textContent = "Next Slide Key: Press a key";
-        document.addEventListener("keydown", keyDownEventNext);
-        document.addEventListener("keyup", keyUpEvent);
-        prev.classList.add("cursor-not-allowed");
-    } else if (next.classList.contains("custom-glow")) {
-        prev.disabled = false;
-        document.removeEventListener("keydown", keyDownEventNext);
-        document.removeEventListener("keyup", keyUpEvent);
-        next.classList.remove("custom-glow");
-        next.textContent = "Next Slide Key: " + (keys.size === 0 ? "Unset" : Array.from(keys).join(", "));
-        window.api.nextShortcut(Array.from(keys).join("+"));
-        prev.classList.remove("cursor-not-allowed");
-    } else {
-        window.api.nextShortcut("");
-        next.textContent = "Next Slide Key: Unset";
-        prev.classList.remove("cursor-not-allowed");
-    }
-});
-
-const prev = document.getElementById("previous") as HTMLButtonElement;
-const keyDownEventPrev = (event: KeyboardEvent) => keyDownEvent(event, prev);
-prev.addEventListener("click", () => {
-    if (document.getElementsByClassName("custom-glow").length > 0 && !prev.classList.contains("custom-glow")) return;
-    if (prev.textContent.includes("Unset")) {
-        keys = new Set<string>();
-        pressedKeys = new Set<string>();
-        next.disabled = true;
-        prev.classList.add("custom-glow");
-        prev.textContent = "Previous Slide Key: Press a key";
-        document.addEventListener("keydown", keyDownEventPrev);
-        document.addEventListener("keyup", keyUpEvent);
-        next.classList.add("cursor-not-allowed");
-    } else if (prev.classList.contains("custom-glow")) {
-        next.disabled = false;
-        document.removeEventListener("keydown", keyDownEventPrev);
-        document.removeEventListener("keyup", keyUpEvent);
-        prev.classList.remove("custom-glow");
-        prev.textContent = "Previous Slide Key: " + (keys.size === 0 ? "Unset" : Array.from(keys).join(", "));
-        window.api.prevShortcut(Array.from(keys).join("+"));
-        next.classList.remove("cursor-not-allowed");
-    } else {
-        window.api.prevShortcut("");
-        prev.textContent = "Previous Slide Key: Unset";
-        next.classList.remove("cursor-not-allowed");
-    }
-});
-
 window.api.swal((options: SweetAlertOptions) => {
-    Swal.fire(options);
+    Swal.fire(options).then(result => {
+        if (options.title === "Update Available") {
+            if (result.isConfirmed) {
+                window.api.openURL("https://github.com/LoSunny/AIESEC-HK-Projector/releases/latest");
+            }
+        }
+    });
 });
 
 document.getElementById("share").addEventListener("click", () => {
@@ -216,6 +166,10 @@ document.getElementById("pdf").addEventListener("click", () => {
     };
     input.click();
 });
+
+document.getElementById("settings").addEventListener("click", () => {
+    window.api.openSettings();
+})
 
 // document.getElementById("observer").addEventListener("click", () => {
 //     const url = "https://jitsi.riot.im/aiesechk";

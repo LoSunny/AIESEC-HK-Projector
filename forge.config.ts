@@ -6,15 +6,15 @@ import {MakerRpm} from "@electron-forge/maker-rpm";
 import {MakerDMG} from "@electron-forge/maker-dmg";
 import {AutoUnpackNativesPlugin} from "@electron-forge/plugin-auto-unpack-natives";
 import {WebpackPlugin} from "@electron-forge/plugin-webpack";
-import {FusesPlugin} from "@electron-forge/plugin-fuses";
-import {FuseV1Options, FuseVersion} from "@electron/fuses";
 
 import {mainConfig} from "./webpack.main.config";
 import {rendererConfig} from "./webpack.renderer.config";
 import PortableMaker from "./src/PortableMaker";
+import * as child_process from "node:child_process";
 import {execSync} from "node:child_process";
 import * as path from "node:path";
 import * as fs from "node:fs";
+import * as os from "node:os";
 
 const config: ForgeConfig = {
     packagerConfig: {
@@ -25,7 +25,12 @@ const config: ForgeConfig = {
         appCategoryType: "public.app-category.developer-tools",
         extraResource: [
             "./bin"
-        ]
+        ],
+        download: {
+            mirrorOptions: {
+                mirror: "https://github.com/castlabs/electron-releases/releases/download/"
+            }
+        }
     },
     rebuildConfig: {},
     makers: [new MakerSquirrel({setupIcon: "./src/assets/Icon.ico"}), new PortableMaker(), new MakerZIP(), new MakerDMG(), new MakerRpm(), new MakerDeb()],
@@ -77,21 +82,29 @@ const config: ForgeConfig = {
                         preload: {
                             js: "./src/integrations/canva.ts",
                         }
+                    }, {
+                        html: "./src/windows/settings/index.html",
+                        js: "./src/windows/settings/renderer.ts",
+                        name: "settings_window",
+                        preload: {
+                            js: "./src/windows/settings/preload.ts",
+                        },
                     }
                 ],
             },
         }),
         // Fuses are used to enable/disable various Electron functionality
         // at package time, before code signing the application
-        new FusesPlugin({
-            version: FuseVersion.V1,
-            [FuseV1Options.RunAsNode]: false,
-            [FuseV1Options.EnableCookieEncryption]: true,
-            [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
-            [FuseV1Options.EnableNodeCliInspectArguments]: false,
-            [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
-            [FuseV1Options.OnlyLoadAppFromAsar]: true,
-        }),
+        // Disable fuse as it is not supported for the current EVS signing process
+        // new FusesPlugin({
+        //     version: FuseVersion.V1,
+        //     [FuseV1Options.RunAsNode]: false,
+        //     [FuseV1Options.EnableCookieEncryption]: true,
+        //     [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
+        //     [FuseV1Options.EnableNodeCliInspectArguments]: false,
+        //     [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
+        //     [FuseV1Options.OnlyLoadAppFromAsar]: true,
+        // }),
     ],
     hooks: {
         preStart: async config => {
@@ -113,6 +126,20 @@ const config: ForgeConfig = {
             console.log("Starting postPackage hook");
             await post("package", config);
             console.log("Finished postPackage hook");
+        },
+        packageAfterExtract: async (config, buildPath: string, electronVersion: string, platform: string, arch: string) => {
+            console.log("Starting packageAfterExtract hook");
+            let prefix = "python";
+            if (os.hostname() === "SunnyLo-MacBook-Air.local")
+                prefix = path.join(os.homedir(), "Documents/Jetbrains/PycharmVenv/castlabs-evs/bin/python3")
+            // const result = child_process.execSync(`${prefix} -m castlabs_evs.vmp sp -p -f "${buildPath}"`);
+            // if (result) console.log("Output:", result.toString());
+            const result = child_process.spawnSync(prefix, ["-m", "castlabs_evs.vmp", "sp", "-p", "-f", buildPath]);
+            if (result.error) console.log("Error:", result.error);
+            if (result.stdout) console.log("Output:", result.stdout?.toString());
+            if (result.stderr) console.log("Error Output:", result.stderr?.toString());
+            if (result.status !== 0) throw result.error;
+            console.log("Finished packageAfterExtract hook");
         },
     }
 };

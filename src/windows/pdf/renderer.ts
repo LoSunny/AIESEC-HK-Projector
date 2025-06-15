@@ -1,7 +1,7 @@
 import "./index.css";
 import * as pdfjsLib from "pdfjs-dist";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = "../../pdf.worker.mjs";
+pdfjsLib.GlobalWorkerOptions.workerSrc = "../pdf.worker.mjs";
 let pdf: pdfjsLib.PDFDocumentProxy;
 let pageNumber = 1;
 

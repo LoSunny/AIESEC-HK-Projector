@@ -1,7 +1,7 @@
 import {app, BrowserWindow, Menu, MenuItemConstructorOptions, shell, WebContentsView} from "electron";
 import {getView} from "./views";
 
-export function setupMenu(mainWindow: () => BrowserWindow, presentWindow: () => BrowserWindow) {
+export function setupMenu(mainWindow: () => BrowserWindow, presentWindow: () => BrowserWindow, settingWindow: () => BrowserWindow) {
     const isMac = process.platform === "darwin";
     const macAppMenu: Electron.MenuItemConstructorOptions = {role: "appMenu"};
     const template: Electron.MenuItemConstructorOptions[] = [
@@ -26,6 +26,10 @@ export function setupMenu(mainWindow: () => BrowserWindow, presentWindow: () => 
                     label: "Present Window DevTools",
                     click: () => presentWindow().webContents.openDevTools({mode: "detach"})
                 },
+                {
+                    label: "Settings Window DevTools",
+                    click: () => settingWindow()?.webContents.openDevTools({mode: "detach"})
+                },
             ]
         }]),
     ];
@@ -33,6 +37,7 @@ export function setupMenu(mainWindow: () => BrowserWindow, presentWindow: () => 
 
     return {
         newViewMenu: (view: WebContentsView, uuid: string, name: string) => {
+            if (app.isPackaged) return;
             (template[template.length - 1].submenu as MenuItemConstructorOptions[]).push({
                 label: name + " DevTools",
                 id: uuid,
@@ -51,11 +56,13 @@ export function setupMenu(mainWindow: () => BrowserWindow, presentWindow: () => 
             Menu.setApplicationMenu(Menu.buildFromTemplate(template));
         },
         deleteViewMenu: (uuid: string) => {
+            if (app.isPackaged) return;
             (template[template.length - 1].submenu as MenuItemConstructorOptions[]).splice(
                 (template[template.length - 1].submenu as MenuItemConstructorOptions[]).findIndex(item => item.id === uuid), 1);
             Menu.setApplicationMenu(Menu.buildFromTemplate(template));
         },
         newInnerViewMenu: (innerView: WebContentsView, uuid: string) => {
+            if (app.isPackaged) return;
             ((template[template.length - 1].submenu as MenuItemConstructorOptions[]).find(item => item.id === uuid).submenu as MenuItemConstructorOptions[]).push({
                 label: innerView.webContents.getTitle(),
                 click: () => getView(uuid).webContents[0].webContents.openDevTools({mode: "detach"}),

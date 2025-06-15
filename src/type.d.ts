@@ -3,6 +3,7 @@ import {presentElectronAPI} from "./windows/present/preload";
 import {viewerElectronAPI} from "./integrations/preload";
 import {shareScreenElectronAPI} from "./windows/sharescreen/preload";
 import {pdfElectronAPI} from "./windows/pdf/preload";
+import {settingsElectronAPI} from "./windows/settings/preload";
 
 declare global {
     interface Window {
@@ -11,5 +12,6 @@ declare global {
         viewerElectronAPI: typeof viewerElectronAPI;
         shareScreenElectronAPI: typeof shareScreenElectronAPI;
         pdfElectronAPI: typeof pdfElectronAPI;
+        settingsElectronAPI: typeof settingsElectronAPI;
     }
 }
