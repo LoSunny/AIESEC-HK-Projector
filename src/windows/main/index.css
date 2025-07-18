@@ -15,3 +15,11 @@ html, body {
 .volumecontrol.mute > .unmuted {
     display: none;
 }
+
+.volumecontrol.play > .notplaying {
+    display: none;
+}
+
+.volumecontrol:not(.play) > .playing {
+    display: none;
+}

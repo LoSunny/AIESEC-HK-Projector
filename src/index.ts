@@ -144,6 +144,7 @@ app.on("ready", async () => {
         addView({id: uuid, name, type: viewType, webContents: [view], active: true, present: false});
         resizeView();
         view.webContents.setUserAgent(view.webContents.session.getUserAgent().replace(/AIESECHKProjector\/.+? /, "").replace(/Electron\/.+? /, ""));
+        view.webContents.on("audio-state-changed", ({audible}) => mainWindow.webContents.send("audio-state-changed", uuid, audible));
         newViewMenu(view, uuid, name);
 
         ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
@@ -188,7 +189,7 @@ app.on("ready", async () => {
         presentWindow.webContents.send("delete-source", source);
         view.webContents.forEach(webContents => {
             webContents.webContents.close();
-            mainWindow.contentView.removeChildView(webContents);
+            if (!mainWindow.isDestroyed()) mainWindow.contentView.removeChildView(webContents);
         });
         deleteView(source);
         deleteViewMenu(source);

@@ -26,7 +26,7 @@ export function resizeView() {
     const width = presentSize.width * ratio;
     const height = presentSize.height * ratio;
 
-    getViews().forEach(view => {
+    for (let view of getViews()) {
         if (view.active) view.webContents[0]?.setBounds({x: mainSize.x, y: mainSize.y, width, height});
         // The non-active screen still need to be in viewport, or else won't update render (i.e. mouse shown even coordinate is out of screen)
         else if (mainSize.width > width)
@@ -46,14 +46,14 @@ export function resizeView() {
         else console.log("Unknown resize", mainSize, width, height);
 
         if (view.webContents.length === 2)
-            view.webContents[1].setBounds({
+            view.webContents[1]?.setBounds({
                 x: mainSize.width > width ? mainSize.x + mainSize.width - 1 : mainSize.x,
                 y: mainSize.height > height ? mainSize.y + mainSize.height - 1 : mainSize.y,
                 width: presentSize.width,
                 height: presentSize.height
             });
         // console.log('resize', view.id, view.active, view.present, view.webContents.map(w => w.getBounds()));
-    });
+    }
 }
 
 export function getMainSize() {

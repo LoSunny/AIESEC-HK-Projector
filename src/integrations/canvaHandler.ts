@@ -21,9 +21,9 @@ export function canvaWindowOpenHandler(CANVA_WINDOW_PRELOAD_WEBPACK_ENTRY: strin
             innerView.webContents.on("did-finish-load", () =>
                 innerView.webContents.insertCSS("div > div > button[aria-label=\"Exit presentation\"] {display: none;}"));
             innerView.webContents.on("destroyed", () => {
-                if (view.webContents.isDestroyed()) return;
+                if (mainWindow.isDestroyed()) return;
+                if (!view.webContents.isDestroyed() && getView(uuid) != null) getView(uuid).webContents.splice(0, 1);
                 mainWindow.contentView.removeChildView(innerView);
-                getView(uuid).webContents.splice(0, 1);
                 resizeView();
                 deleteInnerViewMenu(uuid);
             });

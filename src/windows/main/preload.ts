@@ -20,6 +20,7 @@ export const electronAPI = {
     volumeMute: (uuid: string) => ipcRenderer.send("volume-mute", uuid),
     openSettings: () => ipcRenderer.send("open-settings"),
     openURL: (url: string) => ipcRenderer.send("open-url", url),
+    audioStateChanged: (callback: (uuid: string, audible: boolean) => void) => ipcRenderer.on("audio-state-changed", (event, uuid: string, audible: boolean) => callback(uuid, audible)),
 };
 
 contextBridge.exposeInMainWorld("api", electronAPI);

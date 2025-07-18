@@ -77,7 +77,8 @@ export function setupMenu(mainWindow: () => BrowserWindow, presentWindow: () => 
             Menu.setApplicationMenu(Menu.buildFromTemplate(template));
         },
         deleteInnerViewMenu: (uuid: string) => {
-            ((template[template.length - 1].submenu as MenuItemConstructorOptions[]).find(item => item.id === uuid).submenu as MenuItemConstructorOptions[]).pop();
+            if (app.isPackaged) return;
+            ((template[template.length - 1].submenu as MenuItemConstructorOptions[]).find(item => item.id === uuid)?.submenu as MenuItemConstructorOptions[])?.pop();
             Menu.setApplicationMenu(Menu.buildFromTemplate(template));
         }
     };
