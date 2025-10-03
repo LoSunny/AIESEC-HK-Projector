@@ -29,6 +29,7 @@ async function renderPage() {
     canvas.width = scaledViewport.width;
 
     const renderContext = {
+        canvas: canvas,
         canvasContext: context,
         viewport: scaledViewport,
     };
