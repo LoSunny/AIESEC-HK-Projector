@@ -148,7 +148,7 @@ export function setupShareScreen(mainWindow: () => BrowserWindow, presentWindow:
         macOS15Process?.kill();
 
         deactiveAllViews();
-        presentWindow().webContents.send("new-source", uuid, view.webContents.getMediaSourceId(presentWindow().webContents));
+        presentWindow().webContents.send("new-source", uuid, name, view.webContents.getMediaSourceId(presentWindow().webContents));
         mainWindow().contentView.addChildView(view);
         // view.webContents.openDevTools({mode: 'detach'});
 

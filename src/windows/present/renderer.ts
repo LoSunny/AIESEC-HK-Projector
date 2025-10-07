@@ -44,7 +44,6 @@ function rendererResize() {
 }
 
 window.presentElectronAPI.onNewSource((uuid, name, sourceId) => {
-    console.log("new-source", uuid, sourceId);
     navigator.mediaDevices.getUserMedia({
         // Audio is currently not supported
         // audio: true,

@@ -48,6 +48,7 @@ export function setupMenu(mainWindow: () => BrowserWindow, presentWindow: () => 
                 }]
             });
             view.webContents.on("page-title-updated", (e, title) => {
+                if (view.webContents.isDestroyed()) return;
                 const item = (template[template.length - 1].submenu as MenuItemConstructorOptions[]).find(item => item.id === uuid);
                 if (!item) return;
                 (item.submenu as MenuItemConstructorOptions[]).find(item => item.sublabel === "Main").label = title;

@@ -23,13 +23,10 @@ export function setupShortcuts(mainWindow: () => BrowserWindow) {
     ipcMain.on("next-shortcut", (event, key: string) => {
         console.log("next-shortcut", key);
         if (nextKey !== "") {
-            try {
-                globalShortcut.unregister(nextKey);
-            } catch (_e) {
-            }
+            globalShortcut.unregister(nextKey);
         }
-        if (key === "") return;
         nextKey = key;
+        if (key === "") return;
         try {
             globalShortcut.register(key, () => {
                 const presentView = getPresentView();
@@ -72,8 +69,8 @@ export function setupShortcuts(mainWindow: () => BrowserWindow) {
         if (prevKey !== "") {
             globalShortcut.unregister(prevKey);
         }
-        if (key === "") return;
         prevKey = key;
+        if (key === "") return;
         globalShortcut.register(key, () => {
             const presentView = getPresentView();
             if (presentView === undefined) return;
@@ -90,9 +87,11 @@ export function setupShortcuts(mainWindow: () => BrowserWindow) {
                     execSync(`${winBin} -pid:${view.pid} "{PGUP}"`);
             } else
                 ["keyDown", "char", "keyUp"].forEach(keyType => {
-                    presentView.webContents[0]?.webContents.sendInputEvent({
-                        type: keyType as unknown as "keyDown" | "char" | "keyUp",
-                        keyCode: "PageUp"
+                    presentView.webContents[0]?.webContents.executeJavaScript(`document.body.focus();`).then(() => {
+                        presentView.webContents[0]?.webContents.sendInputEvent({
+                            type: keyType as unknown as "keyDown" | "char" | "keyUp",
+                            keyCode: "PageUp"
+                        });
                     });
                 });
         });

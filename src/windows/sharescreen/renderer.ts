@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const video = document.getElementById("video") as HTMLVideoElement;
         video.srcObject = stream;
         video.onloadedmetadata = () => video.play();
+        if (name === undefined) name = "Entire Screen";
         window.shareScreenElectronAPI.success(stream.id, name);
         stream.getVideoTracks().forEach(track => {
             track.onended = () => window.shareScreenElectronAPI.stopped(stream.id);

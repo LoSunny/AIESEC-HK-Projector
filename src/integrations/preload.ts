@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Canva detected");
         fetch("https://cdn.jsdelivr.net/npm/sweetalert2@11").then(res => res.text()).then(eval).then(() => {
             let enlargeScreenPopup = false;
-            const observer = new MutationObserver((mutationsList, observer) => {
+            new MutationObserver((mutationsList, observer) => {
                 const spans = [...document.querySelectorAll<HTMLElement>("button > span")];
                 const present = spans.find(el => el.innerText === "Present");
                 const signup = spans.find(el => el.innerText === "Sign up");
@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     present.parentElement.click();
                     console.log("Enabling presentation mode, clicking presenter view button");
                     new MutationObserver((mutationsList, observer) => {
+                        /* Presenter view has the problem that cannot play YouTube videos, as the HTML is rendered in the other window
                         const btn = document.querySelector("button[aria-label=\"View your notes and upcoming slides\"]") as HTMLElement;
                         if (btn != null) {
                             observer.disconnect();
@@ -44,13 +45,26 @@ document.addEventListener("DOMContentLoaded", () => {
                                     btn.parentElement.click();
                                     console.log("Clicked present button, clicking close btn");
                                     new MutationObserver((mutationsList, observer) => {
-                                        const btn = document.querySelector("button[aria-label=\"Close\"]");
+                                        const btn = document.querySelector("button[aria-label=\"Close\"]") as HTMLElement;
                                         if (btn != null) {
-                                            observer.disconnect();
-                                            setTimeout(() => (document.querySelector("button[aria-label=\"Close\"]") as HTMLElement).click(), 1000);
+                                            btn.click();
                                             console.log("Clicked close button, presentation mode enabled");
                                         }
                                     }).observe(document.body, {attributes: true, childList: true, subtree: true});
+                                }
+                            }).observe(document.body, {attributes: true, childList: true, subtree: true});
+                        }
+                        */
+                        const btn = [...document.querySelectorAll("button[type=\"submit\"] > span")].find(el => el.textContent === "Present");
+                        if (btn != null && getComputedStyle(btn.parentElement).getPropertyValue("background-color") === "rgb(139, 61, 255)") {
+                            observer.disconnect();
+                            btn.parentElement.click();
+                            console.log("Clicked present button, clicking close btn");
+                            new MutationObserver((mutationsList, observer) => {
+                                const btn = document.querySelector("button[aria-label=\"Close\"]") as HTMLElement;
+                                if (btn != null) {
+                                    btn.click();
+                                    console.log("Clicked close button, presentation mode enabled");
                                 }
                             }).observe(document.body, {attributes: true, childList: true, subtree: true});
                         }
@@ -72,8 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                     console.log("Enlarge screen to enable presentation mode");
                 }
-            });
-            observer.observe(document.body, {attributes: true, childList: true, subtree: true});
+            }).observe(document.body, {attributes: true, childList: true, subtree: true});
         });
     } else if (window.location.href.startsWith("https://docs.google.com/")) {
         console.log("Google Docs detected");
@@ -81,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const mouseDownEvent = new MouseEvent("mousedown", {"view": window, "bubbles": true, "cancelable": true});
         const mouseUpEvent = new MouseEvent("mouseup", {"view": window, "bubbles": true, "cancelable": true});
 
-        const observer = new MutationObserver(async (mutationsList, observer) => {
+        new MutationObserver(async (mutationsList, observer) => {
             if (document.querySelector("#punch-start-presentation-left") != null) {
                 observer.disconnect();
                 await new Promise(resolve => setTimeout(resolve, 1000));
@@ -93,8 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 dropdown.dispatchEvent(mouseUpEvent);
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
-        });
-        observer.observe(document.body, {attributes: true, childList: true, subtree: true});
+        }).observe(document.body, {attributes: true, childList: true, subtree: true});
 
         const script = document.createElement("script");
         script.type = "text/javascript";
