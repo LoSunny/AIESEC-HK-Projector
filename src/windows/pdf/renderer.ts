@@ -11,7 +11,7 @@ let rendering = false;
 let timeout: NodeJS.Timeout;
 
 window.pdfElectronAPI.hasPDF(async (data: string) => {
-    pdf = await pdfjsLib.getDocument(data).promise;
+    pdf = await pdfjsLib.getDocument({data: atob(data.replace("data:application/pdf;base64,", ""))}).promise;
     renderPage();
 });
 

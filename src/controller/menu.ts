@@ -16,7 +16,7 @@ export function setupMenu(mainWindow: () => BrowserWindow, presentWindow: () => 
                     label: "Learn More",
                     click: () => shell.openExternal("https://github.com/LoSunny/AIESEC-HK-Projector")
                 },
-                {label: "By Sunny", click: () => shell.openExternal("https://www.sunnylo.tk")}
+                {label: "By Sunny", click: () => shell.openExternal("https://www.sunnylo.dpdns.org")}
             ]
         },
         ...(app.isPackaged ? [] : [{

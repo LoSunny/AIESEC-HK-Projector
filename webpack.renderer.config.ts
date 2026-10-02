@@ -2,18 +2,22 @@ import type {Configuration} from "webpack";
 
 import {rules} from "./webpack.rules";
 import {plugins} from "./webpack.plugins";
-// eslint-disable-next-line import/default
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import TerserPlugin from "terser-webpack-plugin";
 
-rules.push({
+// The first two shared rules relocate native Node modules for the main process.
+// Applying them to a browser renderer emits a runtime `__dirname` reference,
+// which is unavailable in Electron's sandboxed renderer.
+const rendererRules = rules.slice(2);
+
+rendererRules.push({
     test: /\.css$/,
     use: [{loader: "style-loader"}, {loader: "css-loader"}, {loader: "postcss-loader"}],
 });
 
 export const rendererConfig: Configuration = {
     module: {
-        rules,
+        rules: rendererRules,
     },
     plugins: [
         ...plugins,

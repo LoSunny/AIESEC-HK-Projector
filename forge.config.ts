@@ -38,6 +38,11 @@ const config: ForgeConfig = {
         new AutoUnpackNativesPlugin({}),
         new WebpackPlugin({
             mainConfig,
+            devServer: {
+                client: false,
+                hot: false,
+                liveReload: false,
+            },
             // default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:
             devContentSecurityPolicy: "default-src * 'self' data: 'unsafe-inline' 'unsafe-hashes' 'unsafe-eval'",
             renderer: {
@@ -138,7 +143,7 @@ const config: ForgeConfig = {
             if (result.error) console.log("Error:", result.error);
             if (result.stdout) console.log("Output:", result.stdout?.toString());
             if (result.stderr) console.log("Error Output:", result.stderr?.toString());
-            if (result.status !== 0) throw result.error;
+            if (result.status !== 0) throw result.error ?? new Error("Castlabs VMP post-processing failed");
             console.log("Finished packageAfterExtract hook");
         },
     }

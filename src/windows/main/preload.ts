@@ -2,7 +2,7 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 import {contextBridge, ipcRenderer} from "electron";
-import {SweetAlertOptions} from "sweetalert2";
+import type {SweetAlertOptions} from "sweetalert2";
 
 export const electronAPI = {
     newWindow: (url: string, uuid: string, name: string) => ipcRenderer.send("new-window", url, uuid, name),

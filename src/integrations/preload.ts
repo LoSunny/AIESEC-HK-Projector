@@ -124,16 +124,16 @@ const googleSlideFunction = () => {
         if (method === "GET" && url.toString().match(/https:\/\/docs\.google\.com\/presentation\/d\/.+\/bind\?id=.+/)) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const oldReady: (this: XMLHttpRequest, ev: Event) => any | null = this.onreadystatechange;
-            this.onreadystatechange = function () {
+            this.onreadystatechange = function (event: Event) {
                 const res = this.response.split("\n");
                 console.log("New data", res[res.length - 1]);
                 if (res[res.length - 1].includes("\"c\"")) {
                     window.viewerElectronAPI.googleSlideChanged();
                 }
-                return oldReady.apply(this, args);
+                return oldReady?.call(this, event);
             };
         }
-        return open.apply(this, args);
+        return Reflect.apply(open, this, [method, url, _async, _username, _password, ...args]);
     };
 };
 
