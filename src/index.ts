@@ -1,3 +1,4 @@
+import "./windows/main/navigation";
 import {ElectronBlocker} from "@ghostery/adblocker-electron";
 import {app, BrowserWindow, components, dialog, ipcMain, powerSaveBlocker, shell, WebContentsView} from "electron";
 import fetch from "cross-fetch";

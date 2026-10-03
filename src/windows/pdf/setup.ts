@@ -29,7 +29,7 @@ export function setupPDFScreen(mainWindow: () => BrowserWindow, presentWindow: (
         presentWindow().webContents.send("new-source", uuid, view.webContents.getMediaSourceId(presentWindow().webContents));
         mainWindow().contentView.addChildView(view);
         // view.webContents.openDevTools({mode: "detach"});
-        addView({id: uuid, name,type: "general", webContents: [view], active: true, present: false});
+        addView({id: uuid, name, type: "general", webContents: [view], active: true, present: false});
         resizeView();
         if (!app.isPackaged) newViewMenu(view, uuid, `PDF: ${name}`);
         mainWindow().webContents.send("new-screen-accepted", uuid, name);

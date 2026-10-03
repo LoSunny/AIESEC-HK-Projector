@@ -5,6 +5,13 @@ import {contextBridge, ipcRenderer} from "electron";
 import type {SweetAlertOptions} from "sweetalert2";
 
 export const electronAPI = {
+    browserCommand: (id: string, command: string, url?: string) => ipcRenderer.send("browser-command", id, command, url),
+    browserState: (callback: (id: string, state: {
+        url: string;
+        back: boolean;
+        forward: boolean;
+        loading: boolean
+    }) => void) => ipcRenderer.on("browser-state", (_event, id, state) => callback(id, state)),
     newWindow: (url: string, uuid: string, name: string) => ipcRenderer.send("new-window", url, uuid, name),
     mainNewSize: (x: number, y: number, width: number, height: number) => ipcRenderer.send("main-resize", x, y, width, height),
     changeActive: (source: string) => ipcRenderer.send("change-active", source),

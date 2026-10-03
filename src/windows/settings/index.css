@@ -1,24 +1,297 @@
 @import "tailwindcss";
-/*@config "../../../tailwind.config.js";*/
+
+:root {
+    color-scheme: light dark;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #243044;
+    background: #f3f5f8;
+    --surface: #fff;
+    --border: #dce2eb;
+    --muted: #667287;
+    --soft: #eef2f7;
+    --accent: #176bd1;
+}
+
+* {
+    box-sizing: border-box;
+}
 
 html, body {
-    width: 100%;
-    height: 100%;
+    min-height: 100%;
     margin: 0;
 }
 
-@layer components {
-    @keyframes glow {
-        0%, 100% {
-            box-shadow: 0 0 10px rgba(37, 99, 235, 0.6), 0 0 20px rgba(37, 99, 235, 0.6);
-        }
-        50% {
-            box-shadow: 0 0 20px rgba(37, 99, 235, 1), 0 0 30px rgba(37, 99, 235, 1);
-        }
+.settings {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+h1 {
+    font-size: 30px;
+    font-weight: 650;
+    margin: 0 0 8px;
+}
+
+.intro {
+    color: var(--muted);
+    margin: 0 0 28px;
+    font-size: 15px;
+}
+
+h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 6px;
+}
+
+p {
+    line-height: 1.6;
+}
+
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 22px 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.section-heading p {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 5px 0 0;
+}
+
+.keyboard-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    background: var(--soft);
+    color: var(--accent);
+    font-size: 26px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.shortcut-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.shortcut-row.editing {
+    background: var(--soft);
+}
+
+.shortcut-description {
+    flex: 1;
+    min-width: 200px;
+}
+
+.shortcut-description p {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 0;
+}
+
+.shortcut-value {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    color: var(--muted);
+}
+
+kbd {
+    font: 12px ui-monospace, SFMono-Regular, Consolas, monospace;
+    background: var(--soft);
+    color: inherit;
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    padding: 4px 7px;
+}
+
+.row-actions, .editor-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+button {
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: .45;
+    cursor: default;
+}
+
+button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.secondary {
+    background: var(--surface);
+    border-color: var(--border);
+    color: inherit;
+}
+
+.secondary:hover:not(:disabled), .quiet:hover:not(:disabled) {
+    background: var(--soft);
+}
+
+.quiet {
+    background: transparent;
+    color: var(--muted);
+}
+
+.primary {
+    background: var(--accent);
+    color: #fff;
+}
+
+.primary:hover:not(:disabled) {
+    filter: brightness(.9);
+}
+
+.editor {
+    padding: 22px 24px;
+    background: var(--soft);
+    border-bottom: 1px solid var(--border);
+}
+
+.editor p {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 8px 0 16px;
+}
+
+.capture {
+    min-height: 60px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: var(--surface);
+    border: 2px dashed var(--accent);
+    border-radius: 9px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.editor .error {
+    color: #bd3546;
+    min-height: 20px;
+    margin: 8px 0;
+}
+
+.hint {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.status {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 14px 24px;
+    margin: 0;
+}
+
+.help {
+    padding: 24px 4px 0;
+}
+
+.help h2 {
+    font-size: 14px;
+}
+
+.help ul {
+    padding-left: 20px;
+    margin: 12px 0 0;
+    list-style: disc;
+}
+
+.help li {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 6px 0;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color: #e4e9f2;
+        background: #171d26;
+        --surface: #242d3a;
+        --border: #3d4859;
+        --muted: #adb9cb;
+        --soft: #2d3848;
+        --accent: #3989ed;
     }
 
-    .custom-glow {
-        @apply bg-blue-500 text-white rounded-lg p-2 transition duration-300;
-        animation: glow 1.5s infinite;
+    .editor .error {
+        color: #ff9daa;
+    }
+}
+
+@media (max-width: 560px) {
+    .settings {
+        padding: 20px 16px;
+    }
+
+    .shortcut-description {
+        flex-basis: 100%;
+    }
+
+    .shortcut-value {
+        flex: 1;
+    }
+
+    .section-heading, .shortcut-row, .editor {
+        padding: 18px;
+    }
+
+    .editor-actions {
+        flex-wrap: wrap;
     }
 }

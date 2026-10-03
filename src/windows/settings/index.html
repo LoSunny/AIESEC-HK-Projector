@@ -2,32 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
-    <title>Settings</title>
-</head>
-<body class="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
-<div class="absolute h-full w-full">
-    <div class="flex flex-col h-full w-full">
-        <div class="m-4">
-            <label>
-                <button class="text-white bg-cyan-700 hover:bg-cyan-800 rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
-                        id="previous">
-                    Previous Slide Key: (Unset)
-                </button>
-                <button class="text-white bg-cyan-700 hover:bg-cyan-800 rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
-                        id="next">
-                    Next Slide Key: (Unset)
-                </button>
-            </label>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <title>Settings · AIESEC HK Projector</title></head>
+<body>
+<main class="settings">
+    <header><p class="eyebrow">AIESEC HK Projector</p>
+        <h1>Settings</h1>
+        <p class="intro">Set up your presentation clicker to move between slides.</p></header>
+    <section aria-labelledby="shortcuts-heading" class="panel">
+        <div class="section-heading"><span aria-hidden="true" class="keyboard-icon">⌨</span>
+            <div><h2 id="shortcuts-heading">Presentation clicker</h2>
+                <p>Move between slides without returning to the controller.</p></div>
         </div>
-        <div class="flex flex-row grow overflow-auto">
-            <div class="flex flex-col m-4" id="screens">
-                <div class="flex flex-col">
-                    More to come
-                </div>
+        <div class="shortcut-row" data-action="previous">
+            <div class="shortcut-description"><h3>Previous slide</h3>
+                <p>Go back one slide in the presenting source.</p></div>
+            <output aria-label="Previous slide shortcut" class="shortcut-value" id="previous-value">Loading…</output>
+            <div class="row-actions">
+                <button class="secondary" disabled id="previous">Change</button>
+                <button class="quiet" disabled id="previous-clear">Clear</button>
             </div>
         </div>
-    </div>
-</div>
-<div class="size-6 px-1 me-1"></div>
+        <div class="shortcut-row" data-action="next">
+            <div class="shortcut-description"><h3>Next slide</h3>
+                <p>Advance one slide in the presenting source.</p></div>
+            <output aria-label="Next slide shortcut" class="shortcut-value" id="next-value">Loading…</output>
+            <div class="row-actions">
+                <button class="secondary" disabled id="next">Change</button>
+                <button class="quiet" disabled id="next-clear">Clear</button>
+            </div>
+        </div>
+        <div class="editor" hidden id="shortcut-editor">
+            <h3 id="editor-title">Change shortcut</h3>
+            <p id="recording-instructions">Press the slide button on your presentation clicker, then choose Save
+                shortcut.</p>
+            <div aria-live="polite" class="capture" id="shortcut-preview">Waiting for your clicker…</div>
+            <p class="error" id="capture-error" role="alert"></p>
+            <div class="editor-actions">
+                <button class="primary" disabled id="save-shortcut">Save shortcut</button>
+                <button class="secondary" id="cancel-shortcut">Cancel</button>
+                <span class="hint">Esc to cancel</span></div>
+        </div>
+        <p aria-live="polite" class="status" id="settings-status" role="status">Loading your shortcuts…</p>
+    </section>
+    <aside aria-labelledby="help-heading" class="help"><h2 id="help-heading">How shortcuts work</h2>
+        <ul>
+            <li>Shortcuts control the source selected with <strong>Present tab</strong>, even when you are previewing a
+                different tab.
+            </li>
+            <li>Your clicker works while another app has focus. Keep the clicker connected when presenting.</li>
+            <li>Connect your clicker, choose <strong>Change</strong>, and press its matching slide button. Choose
+                <strong>Save shortcut</strong> to finish, or <strong>Clear</strong> to turn that action off.
+            </li>
+            <li>Shortcuts apply immediately after saving and need to be set again after restarting the app.</li>
+        </ul>
+    </aside>
+</main>
 </body>
 </html>
