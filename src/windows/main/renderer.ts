@@ -15,6 +15,7 @@ type Tab = {
 };
 const tabs = new Map<string, Tab>();
 const pending = new Set<string>();
+const closedTabs: {url: string; name: string}[] = [];
 const get = (id: string) => document.getElementById(id);
 const address = get("url") as HTMLInputElement;
 let active = "black";
@@ -65,6 +66,11 @@ function select(id: string) {
 
 function close(id: string) {
     if (id === "black" || !tabs.has(id)) return;
+    const tab = tabs.get(id);
+    if (tab.web && tab.url) {
+        closedTabs.push({url: tab.url, name: tab.name});
+        if (closedTabs.length > 10) closedTabs.shift();
+    }
     const order = [...get("screens").children].map(el => (el as HTMLElement).dataset.id);
     if (active === id) select(order[order.indexOf(id) - 1] || "black");
     if (presenting === id) {
@@ -274,6 +280,14 @@ window.api.audioStateChanged((id, audible) => {
 });
 window.api.newScreenAccepted((id, name) => addTab(id, name));
 window.api.screenStopped(id => close(id));
+window.api.reopenClosedTab(() => {
+    const last = closedTabs.pop();
+    if (!last) {
+        void Swal.fire({icon: "info", toast: true, position: "top-end", timer: 1500, title: "No recently closed tab", target: get("navigation")});
+        return;
+    }
+    openWebsite(last.url, last.name, true);
+});
 window.api.swal((options: SweetAlertOptions) => {
     if (options.toast) {
         // Anchor SweetAlert to the browser chrome, above the native page view.

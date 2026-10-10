@@ -9,6 +9,15 @@ export function setupMenu(mainWindow: () => BrowserWindow, presentWindow: () => 
         {role: "fileMenu"},
         {role: "editMenu"},
         {role: "viewMenu"},
+        {
+            label: "History", submenu: [
+                {
+                    label: "Reopen Closed Tab",
+                    accelerator: "CmdOrCtrl+Shift+T",
+                    click: () => mainWindow().webContents.send("reopen-closed-tab")
+                },
+            ]
+        },
         {role: "windowMenu"},
         {
             role: "help", submenu: [

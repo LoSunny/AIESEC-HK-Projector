@@ -23,6 +23,7 @@ export const electronAPI = {
     shareScreen: () => ipcRenderer.send("share-screen"),
     newScreenAccepted: (callback: (uuid: string, name: string) => void) => ipcRenderer.on("new-screen-accepted", (event, uuid: string, name: string) => callback(uuid, name)),
     screenStopped: (callback: (uuid: string) => void) => ipcRenderer.on("screen-stopped", (event, uuid: string) => callback(uuid)),
+    reopenClosedTab: (callback: () => void) => ipcRenderer.on("reopen-closed-tab", () => callback()),
     pdf: (name: string, data: string) => ipcRenderer.send("new-pdf", name, data),
     volumeMute: (uuid: string) => ipcRenderer.send("volume-mute", uuid),
     openSettings: () => ipcRenderer.send("open-settings"),
